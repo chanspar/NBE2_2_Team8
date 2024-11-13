@@ -31,7 +31,7 @@ jobs:
       - name: Build with Gradle
         run: |
           cd Learner
-          ./gradlew clean build -x test
+          ./gradlew clean bootJar
 
       - name: Get current time
         uses: josStorer/get-current-time@v2
@@ -40,11 +40,13 @@ jobs:
           format: YYYY-MM-DDTHH-mm-ss
           utcOffset: "+09:00"
 
-      - name: Set artifact
-        run: echo "artifact=$(ls ./Learner/build/libs/*.jar | head -n 1)" >> $GITHUB_ENV
+      - name: Generate deployment package
+        run: |
+          cd Learner/build/libs
+          zip -r ../../../deploy.zip *.jar
 
       - name: Beanstalk Deploy
-        uses: einaregilsson/beanstalk-deploy@v21
+        uses: einaregilsson/beanstalk-deploy@v22  # v21에서 v22로 업데이트
         with:
           aws_access_key: ${{secrets.AWS_ACCESS_KEY}}
           aws_secret_key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
@@ -52,6 +54,7 @@ jobs:
           environment_name: Grepp-web-env
           version_label: github-action-${{steps.current-time.outputs.formattedTime}}
           region: ap-northeast-2
-          deployment_package: ${{env.artifact}}
-          wait_for_environment_recovery: 300  # 5분으로 증가
+          deployment_package: deploy.zip
+          wait_for_environment_recovery: 300
           use_existing_version_if_available: false
+          deployment_timeout: 600  # 10분으로 설정
