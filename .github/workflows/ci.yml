@@ -8,6 +8,16 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    env:
+      DB_URL: ${{ secrets.DB_URL }}
+      DB_USERNAME: ${{ secrets.DB_USERNAME }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
+      NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
+      GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+      GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+      MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+
     steps:
       - uses: actions/checkout@v4
 
@@ -16,9 +26,8 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: Gradle 프로젝트 초기화
-        run: |
-          gradle init --type java-application --dsl groovy
+      - name: Gradle 래퍼 생성
+        run: gradle wrapper
 
       - name: gradlew 실행 권한 부여
         run: chmod +x ./gradlew
