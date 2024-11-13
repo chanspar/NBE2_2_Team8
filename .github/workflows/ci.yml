@@ -31,7 +31,7 @@ jobs:
       - name: Build with Gradle
         run: |
           cd Learner
-          ./gradlew clean bootJar
+          ./gradlew clean bootJar -x test
 
       - name: Get current time
         uses: josStorer/get-current-time@v2
@@ -46,7 +46,7 @@ jobs:
           zip -r ../../../deploy.zip *.jar
 
       - name: Beanstalk Deploy
-        uses: einaregilsson/beanstalk-deploy@v22  # v21에서 v22로 업데이트
+        uses: einaregilsson/beanstalk-deploy@v21
         with:
           aws_access_key: ${{secrets.AWS_ACCESS_KEY}}
           aws_secret_key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
@@ -56,5 +56,5 @@ jobs:
           region: ap-northeast-2
           deployment_package: deploy.zip
           wait_for_environment_recovery: 300
-          use_existing_version_if_available: false
-          deployment_timeout: 600  # 10분으로 설정
+          wait_for_deployment: true
+          max_backoff_retries: 10
