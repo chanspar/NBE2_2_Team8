@@ -16,8 +16,9 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: Gradle 래퍼 생성
-        run: gradle wrapper
+      - name: Gradle 프로젝트 초기화
+        run: |
+          gradle init --type java-application --dsl groovy
 
       - name: gradlew 실행 권한 부여
         run: chmod +x ./gradlew
